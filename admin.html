@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ArtFrenzy Admin Dashboard</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <header>
+    <h1>🎨 ArtFrenzy Admin</h1>
+    <nav>
+        <button class="nav-btn" onclick="showSection('products')">Products</button>
+        <button class="nav-btn" onclick="showSection('purchases')">Purchases</button>
+        <button class="nav-btn" onclick="showSection('users')">Users</button>
+        <button class="nav-btn" onclick="viewClientSite()">View Client Site</button>
+        <button id="logoutBtn">Logout</button>
+    </nav>
+</header>
+
+
+
+    <main>
+        <!-- Products Section -->
+        <section id="products" class="section active">
+            <h2>Create New Product</h2>
+            <form id="productForm">
+                <label> Product Image:
+                    <input type="file" accept="image/*" id="productImage" required>
+                </label>
+                <label>Title:
+                    <input type="text" id="productTitle" required>
+                </label>
+                <label>Price (KES):
+                    <input type="number" id="productPrice" required>
+                </label>
+                <label>Stock:
+                    <input type="number" id="productStock" required>
+                </label>
+                <button type="submit">Publish Product</button>
+            </form>
+
+            <h2>All Products</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Title</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="productTableBody">
+                    <!-- Placeholder -->
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Purchases Section -->
+        <section id="purchases" class="section">
+            <h2>Recent Purchases</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Book Title</th>
+                        <th>Price</th>
+                        <th>Location</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody id="purchaseTableBody">
+                    <tr>
+                        <td>Sample Book</td>
+                        <td>KES 500</td>
+                        <td>Nairobi CBD</td>
+                        <td>2025-08-12</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Users Section -->
+        <section id="users" class="section">
+            <h2>Registered Users</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Purchases</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody">
+                    <tr>
+                        <td>John Doe</td>
+                        <td>john@example.com</td>
+                        <td>3</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <script src="admin.js"></script>
+</body>
+</html>
