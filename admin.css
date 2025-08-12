@@ -1,136 +1,242 @@
+/* admin.css */
+
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
-    font-family: Arial, sans-serif;
-    background-color: #000;
-    color: white;
-    padding: 20px;
+  background-color: #121212; /* Very dark background */
+  color: #eee; /* Light text */
+  line-height: 1.5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-size: 16px;
 }
 
 header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #444;
+  background-color: #000;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid #444;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #fff;
+  box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1);
 }
 
-h1 {
-    font-size: 1.5rem;
+header h1 {
+  font-weight: 700;
+  font-size: 1.8rem;
 }
 
-nav {
-    display: flex;
-    gap: 10px;
+nav button.nav-btn,
+#logoutBtn {
+  background: none;
+  border: 1.5px solid #eee;
+  color: #eee;
+  padding: 0.5rem 1rem;
+  margin-left: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  user-select: none;
 }
 
-.nav-btn, #logoutBtn {
-    padding: 8px 14px;
-    background-color: white;
-    color: black;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+nav button.nav-btn:hover,
+#logoutBtn:hover {
+  background-color: #eee;
+  color: #121212;
 }
 
-.nav-btn:hover, #logoutBtn:hover {
-    background-color: #ddd;
+main {
+  flex-grow: 1;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 .section {
-    display: none;
-    margin-top: 20px;
+  display: none;
+  animation: fadeIn 0.3s ease forwards;
 }
 
 .section.active {
-    display: block;
+  display: block;
 }
 
-/* Forms */
+h2 {
+  font-weight: 700;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 0.3rem;
+  font-size: 1.5rem;
+}
+
 form {
-    background-color: #111;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 20px;
+  background-color: #1a1a1a;
+  padding: 1rem 1.5rem;
+  margin-bottom: 2rem;
+  border-radius: 6px;
+  border: 1px solid #444;
 }
 
-label {
-    display: block;
-    margin-bottom: 5px;
+form label {
+  display: block;
+  margin-bottom: 0.8rem;
+  font-weight: 600;
+  color: #ccc;
 }
 
-input {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 12px;
-    border: none;
-    border-radius: 5px;
-    background-color: #222;
-    color: white;
+form input[type="text"],
+form input[type="number"],
+form input[type="file"] {
+  width: 100%;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid #555;
+  border-radius: 4px;
+  background-color: #121212;
+  color: #eee;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
 }
 
-input:focus {
-    outline: 1px solid white;
+form input[type="text"]:focus,
+form input[type="number"]:focus,
+form input[type="file"]:focus {
+  border-color: #fff;
+  outline: none;
 }
 
-button {
-    padding: 8px 14px;
-    background-color: white;
-    color: black;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+form button[type="submit"] {
+  margin-top: 1rem;
+  background-color: #eee;
+  color: #121212;
+  border: none;
+  padding: 0.7rem 1.3rem;
+  font-weight: 700;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+  user-select: none;
 }
 
-button:hover {
-    background-color: #ddd;
+form button[type="submit"]:hover {
+  background-color: #ccc;
 }
 
-/* Tables */
 table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #1a1a1a;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.05);
 }
 
-th, td {
-    padding: 10px;
-    border-bottom: 1px solid #333;
+thead {
+  background-color: #222;
 }
 
-th {
-    background-color: #111;
+thead th {
+  text-align: left;
+  padding: 0.9rem 1rem;
+  color: #bbb;
+  font-weight: 600;
+  font-size: 1rem;
+  border-bottom: 1px solid #444;
+  user-select: none;
+}
+
+tbody td {
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid #333;
+  color: #ddd;
+  vertical-align: middle;
 }
 
 tbody tr:hover {
-    background-color: #222;
+  background-color: #333;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    table, thead, tbody, th, td, tr {
-        display: block;
-        width: 100%;
-    }
-    thead {
-        display: none;
-    }
-    tr {
-        background: #111;
-        margin-bottom: 10px;
-        border-radius: 5px;
-    }
-    td {
-        padding: 10px;
-        display: flex;
-        justify-content: space-between;
-    }
-    td::before {
-        content: attr(data-label);
-        font-weight: bold;
-    }
+tbody img {
+  border-radius: 4px;
+  max-width: 60px;
+  height: auto;
+  display: block;
 }
+
+button.edit-btn,
+button.delete-btn {
+  background-color: transparent;
+  border: 1.5px solid #eee;
+  color: #eee;
+  padding: 0.3rem 0.7rem;
+  margin-right: 0.5rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  user-select: none;
+}
+
+button.edit-btn:hover {
+  background-color: #eee;
+  color: #121212;
+}
+
+button.delete-btn:hover {
+  background-color: #c62828;
+  border-color: #c62828;
+  color: #fff;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  header {
+    flex-wrap: wrap;
+  }
+  nav button {
+    margin: 0.3rem 0.5rem 0 0;
+    flex-grow: 1;
+  }
+  form label {
+    font-size: 0.9rem;
+  }
+  table, thead, tbody, th, td, tr {
+    display: block;
+  }
+  thead tr {
+    display: none;
+  }
+  tbody td {
+    padding: 0.7rem 1rem;
+    position: relative;
+    padding-left: 50%;
+  }
+  tbody td::before {
+    position: absolute;
+    left: 1rem;
+    width: 45%;
+    white-space: nowrap;
+    font-weight: 700;
+    color: #aaa;
+  }
+  tbody td:nth-of-type(1)::before { content: "Image"; }
+  tbody td:nth-of-type(2)::before { content: "Title"; }
+  tbody td:nth-of-type(3)::before { content: "Price"; }
+  tbody td:nth-of-type(4)::before { content: "Stock"; }
+  tbody td:nth-of-type(5)::before { content: "Actions"; }
+}
+
