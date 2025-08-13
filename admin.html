@@ -5,49 +5,29 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>🎨 ArtFrenzy Admin</title>
 <style>
-    /* Reset & body */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', sans-serif; background-color: #111; color: #eee; min-height: 100vh; }
-
-    /* Header */
     header { padding: 1rem; text-align: center; border-bottom: 2px solid #222; }
     header h1 { font-size: 2rem; font-weight: bold; background: linear-gradient(90deg, red, orange, yellow, green, blue); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-
-    /* Nav */
     nav { display: flex; justify-content: center; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap; }
     nav button { background: #222; color: #fff; border: 1px solid #333; padding: 0.5rem 1rem; border-radius: 5px; cursor: pointer; transition: 0.2s; }
     nav button:hover { background: #444; }
-
-    /* Main sections */
     main { padding: 1rem; }
     section { display: none; }
     section.active { display: block; animation: fadeIn 0.3s ease-in; }
-
-    /* Forms */
     form { display: grid; gap: 0.5rem; margin-bottom: 2rem; }
     input, button { padding: 0.5rem; border-radius: 4px; border: 1px solid #333; background: #222; color: #fff; }
     button[type="submit"] { cursor: pointer; background: #444; transition: 0.2s; }
     button[type="submit"]:hover { background: #666; }
-
-    /* Tables */
+    #imagePreview img { max-width: 150px; border-radius: 5px; border: 1px solid #ccc; margin-top: 0.5rem; }
     table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
     th, td { border: 1px solid #333; padding: 0.5rem; text-align: left; }
     table img { max-width: 50px; border-radius: 3px; }
     td button { background: #800000; color: #fff; border: none; padding: 0.3rem 0.5rem; border-radius: 3px; cursor: pointer; }
     td button:hover { background: #b22222; }
-
-    /* Toast */
     #toast { position: fixed; bottom: 1rem; right: 1rem; background: #333; color: #fff; padding: 0.8rem 1rem; border-radius: 5px; display: none; opacity: 0; transition: 0.3s; z-index: 9999; }
-
-    /* Animations */
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes toastShow { 0% { opacity:0; transform: translateY(20px); } 100% { opacity:1; transform: translateY(0); } }
-
-    /* Mobile */
-    @media(max-width: 600px) {
-        nav { flex-direction: column; }
-        table, th, td { font-size: 0.9rem; }
-    }
+    @media(max-width: 600px) { nav { flex-direction: column; } table, th, td { font-size: 0.9rem; } }
 </style>
 </head>
 <body>
@@ -61,11 +41,11 @@
 </header>
 
 <main>
-    <!-- Products -->
     <section id="products" class="active">
         <h2>Create New Product</h2>
         <form id="productForm">
             <input type="file" accept="image/*" id="productImage" required>
+            <div id="imagePreview"></div>
             <input type="text" id="productTitle" placeholder="Title" required>
             <input type="number" id="productPrice" placeholder="Price (KES)" required>
             <input type="number" id="productStock" placeholder="Stock" required>
@@ -83,7 +63,6 @@
         </table>
     </section>
 
-    <!-- Purchases -->
     <section id="purchases">
         <h2>Recent Purchases</h2>
         <table>
@@ -95,11 +74,12 @@
     </section>
 </main>
 
-<!-- Toast -->
 <div id="toast"></div>
 
 <script>
+// Constants
 const API_BASE = "https://art-frenzy-admin-3.onrender.com";
+const MAX_FILE_SIZE_MB = 5;
 
 // Toast
 function showToast(msg, success=true){
@@ -108,7 +88,7 @@ function showToast(msg, success=true){
     toast.style.background = success ? "#222" : "#800000";
     toast.style.display = "block";
     toast.style.opacity = "1";
-    setTimeout(() => { toast.style.opacity = "0"; setTimeout(() => toast.style.display="none",300); }, 3000);
+    setTimeout(()=>{ toast.style.opacity="0"; setTimeout(()=>toast.style.display="none",300); }, 3000);
 }
 
 // Section toggle
@@ -117,51 +97,45 @@ function showSection(id){
     document.getElementById(id).classList.add("active");
 }
 
-// Load products
-async function loadProducts(){
-    const tbody = document.getElementById("productTableBody");
-    tbody.innerHTML = "<tr><td colspan='6'>Loading...</td></tr>";
-    try{
-        const res = await fetch(`${API_BASE}/admin/products`);
-        const products = await res.json();
-        tbody.innerHTML = products.map(p=>`
-            <tr>
-                <td><img src="${p.image_url}" alt="${p.title}"></td>
-                <td>${p.title}</td>
-                <td>${p.price}</td>
-                <td>${p.stock}</td>
-                <td>${new Date(p.created_at).toLocaleString()}</td>
-                <td><button onclick="deleteProduct(${p.id})">Delete</button></td>
-            </tr>
-        `).join("");
-    } catch(e){
-        tbody.innerHTML = "<tr><td colspan='6'>Failed to load products</td></tr>";
-        showToast("Failed to load products", false);
-        console.error(e);
-    }
-}
+// Image preview & validation
+const productImageInput = document.getElementById("productImage");
+const imagePreview = document.getElementById("imagePreview");
 
-// Load purchases
-async function loadPurchases(){
-    const tbody = document.getElementById("purchaseTableBody");
-    tbody.innerHTML = "<tr><td colspan='5'>Loading...</td></tr>";
-    try{
-        const res = await fetch(`${API_BASE}/admin/purchases`);
-        const purchases = await res.json();
-        tbody.innerHTML = purchases.map(p=>`
-            <tr>
-                <td>${p.product_title}</td>
-                <td>${p.buyer_name}<br>${p.buyer_phone}</td>
-                <td>${p.product_price}</td>
-                <td>${p.drop_location}</td>
-                <td>${new Date(p.purchase_time).toLocaleString()}</td>
-            </tr>
-        `).join("");
-    } catch(e){
-        tbody.innerHTML = "<tr><td colspan='5'>Failed to load purchases</td></tr>";
-        showToast("Failed to load purchases", false);
-        console.error(e);
+productImageInput.addEventListener("change", () => {
+    imagePreview.innerHTML = "";
+    const file = productImageInput.files[0];
+    if(!file) return;
+
+    // Validate type
+    if(!file.type.startsWith("image/")){
+        showToast("Invalid file type", false);
+        productImageInput.value = "";
+        return;
     }
+
+    // Validate size
+    const sizeMB = file.size / (1024 * 1024);
+    if(sizeMB > MAX_FILE_SIZE_MB){
+        showToast(`Image too large. Max ${MAX_FILE_SIZE_MB} MB`, false);
+        productImageInput.value = "";
+        return;
+    }
+
+    // Preview
+    const reader = new FileReader();
+    reader.onload = ()=> {
+        const img = document.createElement("img");
+        img.src = reader.result;
+        imagePreview.appendChild(img);
+    };
+    reader.readAsDataURL(file);
+});
+
+// Helper to shorten filename
+function shortenFileName(file){
+    const ext = file.name.split('.').pop();
+    const shortName = "prod_" + Date.now();
+    return { name: `${shortName}.${ext}`, original: file };
 }
 
 // Add product
@@ -170,13 +144,15 @@ document.getElementById("productForm").addEventListener("submit", async e=>{
     const title = document.getElementById("productTitle").value;
     const price = document.getElementById("productPrice").value;
     const stock = document.getElementById("productStock").value;
-    const file = document.getElementById("productImage").files[0];
+    const file = productImageInput.files[0];
     if(!file) return showToast("Select an image", false);
+
+    const { name: shortName } = shortenFileName(file);
 
     const reader = new FileReader();
     reader.onload = async ()=>{
         const base64 = reader.result;
-        const payload = { title, price, stock, image: base64, filename: file.name };
+        const payload = { title, price, stock, image: base64, filename: shortName };
         try{
             const res = await fetch(`${API_BASE}/admin/add-product`, {
                 method: "POST",
@@ -187,6 +163,7 @@ document.getElementById("productForm").addEventListener("submit", async e=>{
             if(res.ok){
                 showToast("Product added successfully");
                 e.target.reset();
+                imagePreview.innerHTML = "";
                 loadProducts();
             } else showToast(data.error || "Error adding product", false);
         } catch(err){
@@ -196,24 +173,7 @@ document.getElementById("productForm").addEventListener("submit", async e=>{
     };
     reader.readAsDataURL(file);
 });
-
-// Delete product
-async function deleteProduct(id){
-    if(!confirm("Delete this product?")) return;
-    try{
-        const res = await fetch(`${API_BASE}/admin/delete-product/${id}`, { method: "DELETE" });
-        const data = await res.json();
-        if(res.ok){ showToast("Product deleted"); loadProducts(); }
-        else showToast(data.error || "Failed to delete", false);
-    } catch(err){
-        console.error(err);
-        showToast("Network error", false);
-    }
-}
-
-// Initial load
-loadProducts();
-loadPurchases();
 </script>
+
 </body>
 </html>
