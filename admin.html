@@ -101,8 +101,8 @@
 <script>
 const API_BASE = "https://art-frenzy-admin-3.onrender.com";
 
-// Toast function
-function showToast(msg, success=true) {
+// Toast
+function showToast(msg, success=true){
     const toast = document.getElementById("toast");
     toast.textContent = msg;
     toast.style.background = success ? "#222" : "#800000";
@@ -112,19 +112,19 @@ function showToast(msg, success=true) {
 }
 
 // Section toggle
-function showSection(id) {
-    document.querySelectorAll("section").forEach(s => s.classList.remove("active"));
+function showSection(id){
+    document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));
     document.getElementById(id).classList.add("active");
 }
 
 // Load products
-async function loadProducts() {
+async function loadProducts(){
     const tbody = document.getElementById("productTableBody");
     tbody.innerHTML = "<tr><td colspan='6'>Loading...</td></tr>";
-    try {
+    try{
         const res = await fetch(`${API_BASE}/admin/products`);
         const products = await res.json();
-        tbody.innerHTML = products.map(p => `
+        tbody.innerHTML = products.map(p=>`
             <tr>
                 <td><img src="${p.image_url}" alt="${p.title}"></td>
                 <td>${p.title}</td>
@@ -134,7 +134,7 @@ async function loadProducts() {
                 <td><button onclick="deleteProduct(${p.id})">Delete</button></td>
             </tr>
         `).join("");
-    } catch(e) {
+    } catch(e){
         tbody.innerHTML = "<tr><td colspan='6'>Failed to load products</td></tr>";
         showToast("Failed to load products", false);
         console.error(e);
@@ -142,13 +142,13 @@ async function loadProducts() {
 }
 
 // Load purchases
-async function loadPurchases() {
+async function loadPurchases(){
     const tbody = document.getElementById("purchaseTableBody");
     tbody.innerHTML = "<tr><td colspan='5'>Loading...</td></tr>";
-    try {
+    try{
         const res = await fetch(`${API_BASE}/admin/purchases`);
         const purchases = await res.json();
-        tbody.innerHTML = purchases.map(p => `
+        tbody.innerHTML = purchases.map(p=>`
             <tr>
                 <td>${p.product_title}</td>
                 <td>${p.buyer_name}<br>${p.buyer_phone}</td>
@@ -157,7 +157,7 @@ async function loadPurchases() {
                 <td>${new Date(p.purchase_time).toLocaleString()}</td>
             </tr>
         `).join("");
-    } catch(e) {
+    } catch(e){
         tbody.innerHTML = "<tr><td colspan='5'>Failed to load purchases</td></tr>";
         showToast("Failed to load purchases", false);
         console.error(e);
@@ -165,7 +165,7 @@ async function loadPurchases() {
 }
 
 // Add product
-document.getElementById("productForm").addEventListener("submit", async (e)=>{
+document.getElementById("productForm").addEventListener("submit", async e=>{
     e.preventDefault();
     const title = document.getElementById("productTitle").value;
     const price = document.getElementById("productPrice").value;
@@ -177,19 +177,19 @@ document.getElementById("productForm").addEventListener("submit", async (e)=>{
     reader.onload = async ()=>{
         const base64 = reader.result;
         const payload = { title, price, stock, image: base64, filename: file.name };
-        try {
+        try{
             const res = await fetch(`${API_BASE}/admin/add-product`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)
             });
             const data = await res.json();
-            if(res.ok) {
+            if(res.ok){
                 showToast("Product added successfully");
                 e.target.reset();
                 loadProducts();
             } else showToast(data.error || "Error adding product", false);
-        } catch(err) {
+        } catch(err){
             console.error(err);
             showToast("Network error", false);
         }
@@ -200,12 +200,12 @@ document.getElementById("productForm").addEventListener("submit", async (e)=>{
 // Delete product
 async function deleteProduct(id){
     if(!confirm("Delete this product?")) return;
-    try {
+    try{
         const res = await fetch(`${API_BASE}/admin/delete-product/${id}`, { method: "DELETE" });
         const data = await res.json();
-        if(res.ok) { showToast("Product deleted"); loadProducts(); }
+        if(res.ok){ showToast("Product deleted"); loadProducts(); }
         else showToast(data.error || "Failed to delete", false);
-    } catch(err) {
+    } catch(err){
         console.error(err);
         showToast("Network error", false);
     }
