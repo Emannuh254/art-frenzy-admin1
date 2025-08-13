@@ -6,31 +6,29 @@ productForm.addEventListener("submit", function(e) {
   const stock = Number(document.getElementById("productStock").value);
   const imageFile = document.getElementById("productImage").files[0];
 
-  if (!title) {
-    alert("Title is required");
-    return;
-  }
-  if (isNaN(price) || price <= 0) {
-    alert("Please enter a valid positive price");
-    return;
-  }
-  if (isNaN(stock) || stock < 0) {
-    alert("Please enter a valid stock quantity");
-    return;
-  }
-  if (!imageFile) {
-    alert("Please select an image");
-    return;
-  }
+  if (!title) return alert("Title is required");
+  if (isNaN(price) || price <= 0) return alert("Enter valid positive price");
+  if (isNaN(stock) || stock < 0) return alert("Enter valid stock");
+  if (!imageFile) return alert("Please select an image");
 
   const reader = new FileReader();
   reader.onload = function() {
-    const imageBase64 = reader.result.split(",")[1]; // strip prefix here
+    const imageBase64 = reader.result; // full Data URI
+
+    // generate short random filename
+    const ext = imageFile.name.split(".").pop();
+    const shortName = `product_${Date.now()}.${ext}`;
 
     fetch(`${API_BASE}/admin/add-product`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, price, stock, image: imageBase64 }),
+      body: JSON.stringify({
+        title,
+        price,
+        stock,
+        image: imageBase64,
+        filename: shortName
+      }),
     })
     .then(res => res.json())
     .then(data => {
