@@ -4,7 +4,18 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>🎨 ArtFrenzy Admin</title>
+<!-- Import custom CSS -->
 <link rel="stylesheet" href="me.css">
+<style>
+/* Quick enhancements for a more "engineer" vibe */
+body { font-family: 'Courier New', monospace; background:#0d0d0d; color:#eee; }
+header h1 { font-family: 'Segoe UI', sans-serif; letter-spacing: 1px; }
+nav button { font-family: monospace; letter-spacing: 0.5px; font-weight: bold; }
+#spinner { color:#0f0; font-weight:bold; }
+#logContainer { font-family: monospace; font-size:0.85rem; color:#0f0; background:#111; padding:0.5rem; border-radius:6px; border:1px solid #333; }
+#toast { font-family: monospace; }
+table th, table td { font-family: monospace; font-size:0.9rem; }
+</style>
 </head>
 <body>
 <header>
@@ -12,11 +23,12 @@
     <nav>
         <button onclick="showSection('products')">Products</button>
         <button onclick="showSection('purchases')">Purchases</button>
-        <button onclick="window.open('client.html', '_blank')">View Client Site</button>
+        <button onclick="window.open('client.html', '_blank')">Client Site</button>
     </nav>
 </header>
 
 <main>
+    <!-- Products Section -->
     <section id="products" class="active">
         <h2>Create New Product</h2>
         <form id="productForm">
@@ -31,31 +43,47 @@
         <h2>All Products</h2>
         <table>
             <thead>
-                <tr><th>Image</th><th>Title</th><th>Price</th><th>Stock</th><th>Time</th><th>Action</th></tr>
+                <tr>
+                    <th>Image</th>
+                    <th>Title</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Time</th>
+                    <th>Action</th>
+                </tr>
             </thead>
             <tbody id="productTableBody"></tbody>
         </table>
     </section>
 
+    <!-- Purchases Section -->
     <section id="purchases">
         <h2>Recent Purchases</h2>
         <table>
             <thead>
-                <tr><th>Product</th><th>Buyer</th><th>Price</th><th>Location</th><th>Date</th></tr>
+                <tr>
+                    <th>Product</th>
+                    <th>Buyer</th>
+                    <th>Price</th>
+                    <th>Location</th>
+                    <th>Date</th>
+                </tr>
             </thead>
             <tbody id="purchaseTableBody"></tbody>
         </table>
     </section>
 </main>
+
 <!-- Spinner -->
-<div id="spinner" style="display:none;">⏳ Loading...</div>
+<div id="spinner">⏳ Loading...</div>
 
-<!-- Logs -->
-<div id="logContainer" style="max-height:150px; overflow-y:auto; border:1px solid #333; padding:5px; margin-top:10px; background:#111; color:#0f0; font-family:monospace;"></div>
-
-
+<!-- Toast Notifications -->
 <div id="toast"></div>
 
+<!-- Backend Logs -->
+<div id="logContainer"></div>
+
+<!-- JS -->
 <script src="admin.js"></script>
 </body>
 </html>
