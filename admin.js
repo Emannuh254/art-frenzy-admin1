@@ -8,9 +8,11 @@ function showToast(msg, success = true) {
     toast.style.background = success ? "#222" : "#800000";
     toast.style.display = "block";
     toast.style.opacity = "1";
-    setTimeout(() => { 
-        toast.style.opacity = "0"; 
-        setTimeout(() => toast.style.display = "none", 300); 
+    toast.style.transform = "translateY(0)";
+    setTimeout(() => {
+        toast.style.opacity = "0";
+        toast.style.transform = "translateY(20px)";
+        setTimeout(() => toast.style.display = "none", 300);
     }, 3000);
 }
 
@@ -19,6 +21,8 @@ const logContainer = document.getElementById("logContainer");
 function logMessage(msg) {
     const p = document.createElement("p");
     p.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+    p.style.marginBottom = "0.3rem";
+    p.style.fontSize = "0.95rem";
     logContainer.appendChild(p);
     logContainer.scrollTop = logContainer.scrollHeight;
 }
@@ -61,30 +65,34 @@ productImageInput.addEventListener("change", () => {
     reader.onload = () => {
         const img = document.createElement("img");
         img.src = reader.result;
+        img.style.border = "1px solid #444";
+        img.style.borderRadius = "6px";
+        img.style.boxShadow = "0 0 10px rgba(255,255,255,0.1)";
         imagePreview.appendChild(img);
     };
     reader.readAsDataURL(file);
 });
 
+// Shorten file name
 function shortenFileName(file){
     const ext = file.name.split('.').pop();
     const shortName = "prod_" + Date.now();
     return { name: `${shortName}.${ext}`, original: file };
 }
 
-// Add product with logs and animation
+// Add product
 document.getElementById("productForm").addEventListener("submit", async e => {
     e.preventDefault();
 
-    const title = document.getElementById("productTitle").value;
-    const price = document.getElementById("productPrice").value;
-    const stock = document.getElementById("productStock").value;
+    const title = document.getElementById("productTitle").value.trim();
+    const price = document.getElementById("productPrice").value.trim();
+    const stock = document.getElementById("productStock").value.trim();
     const file = productImageInput.files[0];
     if(!file) return showToast("Select an image", false);
 
     const { name: shortName } = shortenFileName(file);
 
-    logContainer.innerHTML = ""; // Clear logs
+    logContainer.innerHTML = "";
     logMessage("Preparing product data...");
     setLoading(true);
 
@@ -100,22 +108,22 @@ document.getElementById("productForm").addEventListener("submit", async e => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)
             });
-
             const data = await res.json();
+
             if(res.ok){
-                logMessage("Product added successfully!");
+                logMessage("✅ Product added successfully!");
                 showToast("Product added successfully");
                 e.target.reset();
                 imagePreview.innerHTML = "";
                 loadProducts();
             } else {
-                logMessage("Error: " + (data.error || "Unknown error"));
+                logMessage("❌ Error: " + (data.error || "Unknown error"));
                 showToast(data.error || "Error adding product", false);
             }
         } catch(err){
-            logMessage("Network error: " + err.message);
-            console.error(err);
+            logMessage("❌ Network error: " + err.message);
             showToast("Network error", false);
+            console.error(err);
         } finally {
             setLoading(false);
         }
@@ -142,6 +150,14 @@ async function deleteProduct(id) {
         showToast("Failed to delete product", false);
         logMessage("Delete network error: " + err.message);
     }
+}
+
+// Placeholder functions to load products & purchases
+async function loadProducts() {
+    // Implement your fetch and DOM rendering for products here
+}
+async function loadPurchases() {
+    // Implement your fetch and DOM rendering for purchases here
 }
 
 // Initial load
