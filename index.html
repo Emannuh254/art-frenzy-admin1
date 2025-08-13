@@ -1,117 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Art Frenzy Admin Dashboard</title>
-<link rel="stylesheet" href="style.css">
-<style>
-    body { font-family: Arial, sans-serif; background: #f5f5f5; color: #333; margin:0; padding:0; }
-    header { background:#222; color:white; padding:1rem; text-align:center; }
-    .container { padding:1rem; max-width:900px; margin:auto; }
-    form { background:white; padding:1rem; border-radius:8px; margin-bottom:2rem; }
-    input, button { padding:0.5rem; margin:0.5rem 0; width:100%; }
-    button { background:#222; color:white; border:none; cursor:pointer; }
-    table { width:100%; border-collapse: collapse; }
-    th, td { border:1px solid #ccc; padding:0.5rem; text-align:left; }
-    img { max-width:50px; height:auto; }
-</style>
-</head>
-<body>
-<header>
-    <h1>Art Frenzy Admin Dashboard</h1>
-</header>
+const reader = new FileReader();
+reader.onload = async function() {
+    try {
+        const imageBase64 = reader.result.split(",")[1]; // short payload
+        const ext = imageFile.name.split(".").pop();
+        const shortName = `product_${Date.now()}.${ext}`;
 
-<div class="container">
-    <h2>Add New Product</h2>
-    <form id="productForm">
-        <input type="text" id="productTitle" placeholder="Product Title" required>
-        <input type="number" id="productPrice" placeholder="Price" required>
-        <input type="number" id="productStock" placeholder="Stock Quantity" required>
-        <input type="file" id="productImage" accept="image/*" required>
-        <button type="submit">Add Product</button>
-    </form>
-
-    <h2>All Products</h2>
-    <table id="productsTable">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Title</th>
-                <th>Price</th>
-                <th>Stock</th>
-                <th>Image</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-</div>
-
-<script>
-const API_BASE = "https://art-frenzy-admin-3.onrender.com"; // change if different
-const productForm = document.getElementById("productForm");
-const productsTableBody = document.querySelector("#productsTable tbody");
-
-function loadProducts() {
-    fetch(`${API_BASE}/admin/products`)
-    .then(res => res.json())
-    .then(products => {
-        productsTableBody.innerHTML = "";
-        products.forEach(p => {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-                <td>${p.id}</td>
-                <td>${p.title}</td>
-                <td>${p.price}</td>
-                <td>${p.stock}</td>
-                <td><img src="${p.image_url}" alt="${p.title}"></td>
-            `;
-            productsTableBody.appendChild(tr);
+        const res = await fetch(`${API_BASE}/admin/add-product`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ title, price, stock, image: imageBase64, filename: shortName })
         });
-    })
-    .catch(err => console.error("Error loading products:", err));
-}
 
-productForm.addEventListener("submit", function(e) {
-  e.preventDefault();
-
-  const title = document.getElementById("productTitle").value.trim();
-  const price = Number(document.getElementById("productPrice").value);
-  const stock = Number(document.getElementById("productStock").value);
-  const imageFile = document.getElementById("productImage").files[0];
-
-  if (!title || isNaN(price) || price <= 0 || isNaN(stock) || stock < 0 || !imageFile) {
-    return alert("Please fill all fields correctly");
-  }
-
-  const reader = new FileReader();
-  reader.onload = function() {
-    const imageBase64 = reader.result; // full Data URI
-    const ext = imageFile.name.split(".").pop();
-    const shortName = `product_${Date.now()}.${ext}`;
-
-    fetch(`${API_BASE}/admin/add-product`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, price, stock, image: imageBase64, filename: shortName }),
-    })
-    .then(res => res.json())
-    .then(data => {
-      if (data.error) alert("Error: " + data.error);
-      else {
-        alert("Product added successfully!");
-        productForm.reset();
-        loadProducts();
-      }
-    })
-    .catch(err => { console.error(err); alert("Network error"); });
-  };
-  reader.readAsDataURL(imageFile);
-});
-
-// Load products on page load
-loadProducts();
-</script>
-<script src="admin.js"></script>
-</body>
-</html>
+        const data = await res.json();
+        if (res.ok) {
+            alert("Product added successfully!");
+            productForm.reset();
+            loadProducts();
+        } else {
+            alert("Error: " + data.error);
+        }
+    } catch (err) {
+        console.error(err);
+        alert("Network or server error");
+    }
+};
+reader.readAsDataURL(imageFile);
