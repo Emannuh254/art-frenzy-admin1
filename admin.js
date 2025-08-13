@@ -33,12 +33,6 @@ function setLoading(show) {
     spinner.style.display = show ? "inline-block" : "none";
 }
 
-// Section toggle
-function showSection(id) {
-    document.querySelectorAll("section").forEach(s => s.classList.remove("active"));
-    document.getElementById(id).classList.add("active");
-}
-
 // Image preview & validation
 const productImageInput = document.getElementById("productImage");
 const imagePreview = document.getElementById("imagePreview");
@@ -73,7 +67,6 @@ productImageInput.addEventListener("change", () => {
     reader.readAsDataURL(file);
 });
 
-// Shorten file name
 function shortenFileName(file){
     const ext = file.name.split('.').pop();
     const shortName = "prod_" + Date.now();
@@ -152,14 +145,30 @@ async function deleteProduct(id) {
     }
 }
 
-// Placeholder functions to load products & purchases
-async function loadProducts() {
-    // Implement your fetch and DOM rendering for products here
+// Load logs from backend
+async function loadLogs() {
+    try {
+        const res = await fetch(`${API_BASE}/admin/logs`);
+        const data = await res.json();
+        logContainer.innerHTML = "";
+        data.logs.forEach(msg => {
+            const p = document.createElement("p");
+            p.textContent = msg;
+            p.style.fontSize = "0.95rem";
+            logContainer.appendChild(p);
+        });
+        logContainer.scrollTop = logContainer.scrollHeight;
+    } catch(err){
+        console.error(err);
+        showToast("Failed to load logs", false);
+    }
 }
-async function loadPurchases() {
-    // Implement your fetch and DOM rendering for purchases here
-}
+
+// Placeholder load functions
+async function loadProducts() {}
+async function loadPurchases() {}
 
 // Initial load
 loadProducts();
 loadPurchases();
+loadLogs();
