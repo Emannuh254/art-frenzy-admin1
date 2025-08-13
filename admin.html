@@ -163,67 +163,35 @@
         </table>
     </section>
 </main>
-
 <script>
-const API_URL = "https://art-frenzy-admin-2.onrender.com";
+const reader = new FileReader();
+reader.onload = async function() {
+    try {
+        const imageBase64 = reader.result.split(",")[1]; // short payload
+        const ext = imageFile.name.split(".").pop();
+        const shortName = `product_${Date.now()}.${ext}`;
 
-function showSection(id) {
-    document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
-    document.getElementById(id).classList.add("active");
-}
+        const res = await fetch(`${API_BASE}/admin/add-product`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ title, price, stock, image: imageBase64, filename: shortName })
+        });
 
-async function loadProducts() {
-    const res = await fetch(`${API_URL}/admin/products`);
-    const products = await res.json();
-    const tbody = document.getElementById("productTableBody");
-    tbody.innerHTML = "";
-    products.forEach(p => {
-        tbody.innerHTML += `
-        <tr>
-            <td><img src="${p.image_url}" alt=""></td>
-            <td>${p.title}</td>
-            <td>${p.price}</td>
-            <td>${p.stock}</td>
-        </tr>`;
-    });
-}
-
-function toBase64(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = reject;
-    });
-}
-
-document.getElementById("productForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const imageFile = document.getElementById("productImage").files[0];
-    const imageBase64 = await toBase64(imageFile);
-
-    const newProduct = {
-        title: document.getElementById("productTitle").value,
-        price: parseFloat(document.getElementById("productPrice").value),
-        stock: parseInt(document.getElementById("productStock").value),
-        image: imageBase64
-    };
-
-    const res = await fetch(`${API_URL}/admin/add-product`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newProduct)
-    });
-
-    const data = await res.json();
-    alert(data.message || data.error);
-    if (data.message) {
-        document.getElementById("productForm").reset();
-        loadProducts();
+        const data = await res.json();
+        if (res.ok) {
+            alert("Product added successfully!");
+            productForm.reset();
+            loadProducts();
+        } else {
+            alert("Error: " + data.error);
+        }
+    } catch (err) {
+        console.error(err);
+        alert("Network or server error");
     }
-});
-
-loadProducts();
+};
+reader.readAsDataURL(imageFile);
 </script>
+
 </body>
 </html>
