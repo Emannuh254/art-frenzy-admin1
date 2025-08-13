@@ -1,21 +1,37 @@
-// admin.js
-
 const API_BASE = "https://art-frenzy-admin-3.onrender.com";
 const MAX_FILE_SIZE_MB = 5;
 
 // Toast
-function showToast(msg, success=true){
+function showToast(msg, success = true) {
     const toast = document.getElementById("toast");
     toast.textContent = msg;
     toast.style.background = success ? "#222" : "#800000";
     toast.style.display = "block";
     toast.style.opacity = "1";
-    setTimeout(()=>{ toast.style.opacity="0"; setTimeout(()=>toast.style.display="none",300); }, 3000);
+    setTimeout(() => { 
+        toast.style.opacity = "0"; 
+        setTimeout(() => toast.style.display = "none", 300); 
+    }, 3000);
+}
+
+// Logs container
+const logContainer = document.getElementById("logContainer");
+function logMessage(msg) {
+    const p = document.createElement("p");
+    p.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+    logContainer.appendChild(p);
+    logContainer.scrollTop = logContainer.scrollHeight;
+}
+
+// Loading spinner
+function setLoading(show) {
+    const spinner = document.getElementById("spinner");
+    spinner.style.display = show ? "inline-block" : "none";
 }
 
 // Section toggle
-function showSection(id){
-    document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));
+function showSection(id) {
+    document.querySelectorAll("section").forEach(s => s.classList.remove("active"));
     document.getElementById(id).classList.add("active");
 }
 
@@ -28,24 +44,21 @@ productImageInput.addEventListener("change", () => {
     const file = productImageInput.files[0];
     if(!file) return;
 
-    // Validate type
     if(!file.type.startsWith("image/")){
         showToast("Invalid file type", false);
         productImageInput.value = "";
         return;
     }
 
-    // Validate size
-    const sizeMB = file.size / (1024 * 1024);
+    const sizeMB = file.size / (1024*1024);
     if(sizeMB > MAX_FILE_SIZE_MB){
         showToast(`Image too large. Max ${MAX_FILE_SIZE_MB} MB`, false);
         productImageInput.value = "";
         return;
     }
 
-    // Preview
     const reader = new FileReader();
-    reader.onload = ()=> {
+    reader.onload = () => {
         const img = document.createElement("img");
         img.src = reader.result;
         imagePreview.appendChild(img);
@@ -53,67 +66,16 @@ productImageInput.addEventListener("change", () => {
     reader.readAsDataURL(file);
 });
 
-// Helper to shorten filename
 function shortenFileName(file){
     const ext = file.name.split('.').pop();
     const shortName = "prod_" + Date.now();
     return { name: `${shortName}.${ext}`, original: file };
 }
 
-// Load products from backend
-async function loadProducts() {
-    const tbody = document.getElementById("productTableBody");
-    tbody.innerHTML = "<tr><td colspan='6'>Loading...</td></tr>";
-
-    try {
-        const res = await fetch(`${API_BASE}/admin/products`);
-        const products = await res.json();
-        tbody.innerHTML = products.map(p => `
-            <tr>
-                <td><img src="${p.image}" alt="${p.title}"></td>
-                <td>${p.title}</td>
-                <td>${p.price}</td>
-                <td>${p.stock}</td>
-                <td>
-                    ${new Date(p.created_at).toLocaleString()}
-                </td>
-                <td>
-                    <button onclick="deleteProduct(${p.id})">Delete</button>
-                </td>
-            </tr>
-        `).join("");
-    } catch (err) {
-        tbody.innerHTML = "<tr><td colspan='6'>Failed to load products</td></tr>";
-        console.error(err);
-    }
-}
-
-// Load purchases from backend
-async function loadPurchases() {
-    const tbody = document.getElementById("purchaseTableBody");
-    tbody.innerHTML = "<tr><td colspan='5'>Loading...</td></tr>";
-
-    try {
-        const res = await fetch(`${API_BASE}/admin/purchases`);
-        const purchases = await res.json();
-        tbody.innerHTML = purchases.map(p => `
-            <tr>
-                <td>${p.product}</td>
-                <td>${p.buyer}</td>
-                <td>${p.price}</td>
-                <td>${p.location}</td>
-                <td>${new Date(p.date).toLocaleString()}</td>
-            </tr>
-        `).join("");
-    } catch (err) {
-        tbody.innerHTML = "<tr><td colspan='5'>Failed to load purchases</td></tr>";
-        console.error(err);
-    }
-}
-
-// Add product
-document.getElementById("productForm").addEventListener("submit", async e=>{
+// Add product with logs and animation
+document.getElementById("productForm").addEventListener("submit", async e => {
     e.preventDefault();
+
     const title = document.getElementById("productTitle").value;
     const price = document.getElementById("productPrice").value;
     const stock = document.getElementById("productStock").value;
@@ -122,26 +84,40 @@ document.getElementById("productForm").addEventListener("submit", async e=>{
 
     const { name: shortName } = shortenFileName(file);
 
+    logContainer.innerHTML = ""; // Clear logs
+    logMessage("Preparing product data...");
+    setLoading(true);
+
     const reader = new FileReader();
-    reader.onload = async ()=>{
+    reader.onload = async () => {
         const base64 = reader.result;
         const payload = { title, price, stock, image: base64, filename: shortName };
-        try{
+
+        logMessage("Sending data to backend...");
+        try {
             const res = await fetch(`${API_BASE}/admin/add-product`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)
             });
+
             const data = await res.json();
             if(res.ok){
+                logMessage("Product added successfully!");
                 showToast("Product added successfully");
                 e.target.reset();
                 imagePreview.innerHTML = "";
                 loadProducts();
-            } else showToast(data.error || "Error adding product", false);
+            } else {
+                logMessage("Error: " + (data.error || "Unknown error"));
+                showToast(data.error || "Error adding product", false);
+            }
         } catch(err){
+            logMessage("Network error: " + err.message);
             console.error(err);
             showToast("Network error", false);
+        } finally {
+            setLoading(false);
         }
     };
     reader.readAsDataURL(file);
@@ -149,19 +125,22 @@ document.getElementById("productForm").addEventListener("submit", async e=>{
 
 // Delete product
 async function deleteProduct(id) {
-    if (!confirm("Are you sure you want to delete this product?")) return;
+    if(!confirm("Are you sure you want to delete this product?")) return;
     try {
-        const res = await fetch(`${API_BASE}/admin/delete-product/${id}`, {
-            method: "DELETE"
-        });
+        const res = await fetch(`${API_BASE}/admin/delete-product/${id}`, { method: "DELETE" });
         const data = await res.json();
-        if (res.ok) {
+        if(res.ok){
             showToast("Product deleted");
+            logMessage(`Deleted product ID ${id}`);
             loadProducts();
-        } else showToast(data.error || "Error deleting product", false);
-    } catch (err) {
+        } else {
+            showToast(data.error || "Error deleting product", false);
+            logMessage("Delete error: " + (data.error || "Unknown"));
+        }
+    } catch(err){
         console.error(err);
         showToast("Failed to delete product", false);
+        logMessage("Delete network error: " + err.message);
     }
 }
 
