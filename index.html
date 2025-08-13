@@ -1,27 +1,30 @@
-const reader = new FileReader();
-reader.onload = async function() {
-    try {
-        const imageBase64 = reader.result.split(",")[1]; // short payload
-        const ext = imageFile.name.split(".").pop();
-        const shortName = `product_${Date.now()}.${ext}`;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Art Frenzy Admin - Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="login-container">
+    <div class="login-logo">🖌️</div>
+    <h1>Art Frenzy Admin</h1>
+    <form id="loginForm">
+        <div class="input-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" placeholder="Enter username" required>
+        </div>
+        <div class="input-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Enter password" required>
+        </div>
+        <button type="submit">Login</button>
+        <p id="error-msg"></p>
+    </form>
+</div>
 
-        const res = await fetch(`${API_BASE}/admin/add-product`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ title, price, stock, image: imageBase64, filename: shortName })
-        });
 
-        const data = await res.json();
-        if (res.ok) {
-            alert("Product added successfully!");
-            productForm.reset();
-            loadProducts();
-        } else {
-            alert("Error: " + data.error);
-        }
-    } catch (err) {
-        console.error(err);
-        alert("Network or server error");
-    }
-};
-reader.readAsDataURL(imageFile);
+    <script src="script.js"></script>
+</body>
+</html>
