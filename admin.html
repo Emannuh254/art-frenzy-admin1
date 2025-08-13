@@ -112,9 +112,7 @@
     <nav>
         <button onclick="showSection('products')">Products</button>
         <button onclick="showSection('purchases')">Purchases</button>
-        <button onclick="showSection('users')">Users</button>
         <button onclick="window.open('client.html', '_blank')">View Client Site</button>
-        <button id="logoutBtn">Logout</button>
     </nav>
 </header>
 
@@ -134,7 +132,7 @@
         <table>
             <thead>
                 <tr>
-                    <th>Image</th><th>Title</th><th>Price</th><th>Stock</th>
+                    <th>Image</th><th>Title</th><th>Price</th><th>Stock</th><th>Time</th><th>Action</th>
                 </tr>
             </thead>
             <tbody id="productTableBody"></tbody>
@@ -146,52 +144,127 @@
         <h2>Recent Purchases</h2>
         <table>
             <thead>
-                <tr><th>Product</th><th>Description</th><th>Price</th><th>Location</th><th>Date</th></tr>
+                <tr><th>Product</th><th>Buyer</th><th>Price</th><th>Location</th><th>Date</th></tr>
             </thead>
             <tbody id="purchaseTableBody"></tbody>
         </table>
     </section>
-
-    <!-- Users Section -->
-    <section id="users" class="section">
-        <h2>Registered Users</h2>
-        <table>
-            <thead>
-                <tr><th>Name</th><th>Phone number</th><th>Purchases</th></tr>
-            </thead>
-            <tbody id="userTableBody"></tbody>
-        </table>
-    </section>
 </main>
+
 <script>
-const reader = new FileReader();
-reader.onload = async function() {
+const API_BASE = "http://localhost:8000/admin";
+
+// Sections toggle
+function showSection(id) {
+    document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+}
+
+// Load products
+async function loadProducts() {
+    const tbody = document.getElementById("productTableBody");
+    tbody.innerHTML = "<tr><td colspan='6'>Loading...</td></tr>";
+
     try {
-        const imageBase64 = reader.result.split(",")[1]; // short payload
-        const ext = imageFile.name.split(".").pop();
-        const shortName = `product_${Date.now()}.${ext}`;
+        const res = await fetch(`${API_BASE}/products`);
+        const products = await res.json();
+        tbody.innerHTML = products.map(p => `
+            <tr>
+                <td><img src="${p.image_url}" alt="${p.title}"></td>
+                <td>${p.title}</td>
+                <td>${p.price}</td>
+                <td>${p.stock}</td>
+                <td>${new Date(p.created_at).toLocaleString()}</td>
+                <td><button onclick="deleteProduct(${p.id})">Delete</button></td>
+            </tr>
+        `).join("");
+    } catch (err) {
+        tbody.innerHTML = "<tr><td colspan='6'>Failed to load products</td></tr>";
+        console.error(err);
+    }
+}
 
-        const res = await fetch(`${API_BASE}/admin/add-product`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ title, price, stock, image: imageBase64, filename: shortName })
-        });
+// Load purchases
+async function loadPurchases() {
+    const tbody = document.getElementById("purchaseTableBody");
+    tbody.innerHTML = "<tr><td colspan='5'>Loading...</td></tr>";
 
+    try {
+        const res = await fetch(`${API_BASE}/purchases`);
+        const purchases = await res.json();
+        tbody.innerHTML = purchases.map(p => `
+            <tr>
+                <td>${p.product_title}</td>
+                <td>${p.buyer_name}<br>${p.buyer_phone}</td>
+                <td>${p.product_price}</td>
+                <td>${p.drop_location}</td>
+                <td>${new Date(p.purchase_time).toLocaleString()}</td>
+            </tr>
+        `).join("");
+    } catch (err) {
+        tbody.innerHTML = "<tr><td colspan='5'>Failed to load purchases</td></tr>";
+        console.error(err);
+    }
+}
+
+// Handle add product form
+document.getElementById("productForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const title = document.getElementById("productTitle").value;
+    const price = document.getElementById("productPrice").value;
+    const stock = document.getElementById("productStock").value;
+    const file = document.getElementById("productImage").files[0];
+
+    if (!file) return alert("Select an image");
+
+    const reader = new FileReader();
+    reader.onload = async () => {
+        const base64 = reader.result;
+        const payload = { title, price, stock, image: base64, filename: file.name };
+
+        try {
+            const res = await fetch(`${API_BASE}/add-product`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (res.ok) {
+                alert("Product added successfully!");
+                document.getElementById("productForm").reset();
+                loadProducts();
+            } else {
+                alert("Error: " + data.error);
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Network error");
+        }
+    };
+    reader.readAsDataURL(file);
+});
+
+// Delete product
+async function deleteProduct(id) {
+    if (!confirm("Delete this product?")) return;
+    try {
+        const res = await fetch(`${API_BASE}/delete-product/${id}`, { method: "DELETE" });
         const data = await res.json();
         if (res.ok) {
-            alert("Product added successfully!");
-            productForm.reset();
+            alert("Product deleted");
             loadProducts();
         } else {
             alert("Error: " + data.error);
         }
     } catch (err) {
         console.error(err);
-        alert("Network or server error");
+        alert("Failed to delete product");
     }
-};
-reader.readAsDataURL(imageFile);
-</script>
+}
 
+// Initial load
+loadProducts();
+loadPurchases();
+</script>
 </body>
 </html>
