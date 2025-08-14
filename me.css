@@ -30,6 +30,17 @@ header h1 {
   -webkit-text-fill-color: transparent;
   text-shadow: 0 0 10px rgba(255,255,255,0.1);
 }
+#logContainer {
+    font-family: monospace;
+    font-size: 0.85rem;
+    color: #0f0;
+    background: #111;
+    padding: 0.5rem;
+    border-radius: 6px;
+    border: 1px solid #333;
+    max-height: 300px;    /* add a height */
+    overflow-y: auto;     /* allow scrolling */
+}
 
 nav {
   display: flex;
