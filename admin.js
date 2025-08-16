@@ -67,15 +67,18 @@ form.addEventListener("submit", async (e) => {
   }
 });
 
-// Load products
 async function loadProducts() {
   productsContainer.innerHTML = "Loading...";
+  showToast("Loading products...");
   try {
     const res = await fetch(`${API_BASE}/admin/products`);
+    if(!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
     const products = await res.json();
+
     productsContainer.innerHTML = "";
     if (!products || products.length === 0) {
       productsContainer.innerHTML = "<p style='text-align:center;'>No products available.</p>";
+      showToast("No products found.");
       return;
     }
 
@@ -85,20 +88,63 @@ async function loadProducts() {
       card.innerHTML = `
         ${p.stock===0?'<div class="sold-badge">Sold Out</div>':''}
         <img src="${p.thumb_url||p.image_url}" alt="${p.title}" />
-        <h3>${p.title}</h3>
-        <p>KES ${p.price}</p>
-        <p>Stock: ${p.stock}</p>
-        <div style="display:flex;gap:0.5rem;">
+        <div class="details">
+          <h3>${p.title}</h3>
+          <p>KES ${p.price}</p>
+          <p>Stock: ${p.stock}</p>
+        </div>
+        <div style="display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap;margin-top:0.5rem;">
           <button onclick="openProductModal(${p.id}, '${p.title}', ${p.price}, ${p.stock})">Manage</button>
           <button onclick="deleteProduct(${p.id})">Delete</button>
         </div>
       `;
       productsContainer.appendChild(card);
     });
-  } catch {
-    productsContainer.innerHTML = "<p>Failed to load products.</p>";
+
+    showToast(`Loaded ${products.length} products ✅`);
+    updateGridCentering();
+  } catch (err) {
+    console.error("Failed to load products:", err);
+    productsContainer.innerHTML = "<p style='text-align:center;'>Failed to load products.</p>";
+    showToast("Error loading products ❌");
   }
 }
+
+async function loadPurchases() {
+  purchasesContainer.innerHTML = "Loading...";
+  showToast("Loading purchases...");
+  try {
+    const res = await fetch(`${API_BASE}/admin/purchases`);
+    if(!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+    const purchases = await res.json();
+
+    purchasesContainer.innerHTML = "";
+    if (!purchases || purchases.length === 0) {
+      purchasesContainer.innerHTML = "<p style='text-align:center;'>No purchases yet.</p>";
+      showToast("No purchases found.");
+      return;
+    }
+
+    purchases.forEach(p => {
+      const div = document.createElement("div");
+      div.className = "purchase-item";
+      div.innerHTML = `
+        <p><strong>${p.buyer_name}</strong> (${p.buyer_phone})</p>
+        <p>Location: ${p.drop_location}</p>
+        <p>Product ID: ${p.product_id} — Txn: ${p.transaction_id}</p>
+        <p>Time: ${new Date(p.purchase_time).toLocaleString()}</p>
+      `;
+      purchasesContainer.appendChild(div);
+    });
+
+    showToast(`Loaded ${purchases.length} purchases ✅`);
+  } catch (err) {
+    console.error("Failed to load purchases:", err);
+    purchasesContainer.innerHTML = "<p style='text-align:center;'>Failed to load purchases.</p>";
+    showToast("Error loading purchases ❌");
+  }
+}
+
 
 // Open modal for product management
 function openProductModal(id, title, price, stock) {
@@ -166,29 +212,7 @@ function openProductModal(id, title, price, stock) {
   document.getElementById("close-modal").onclick = () => { modal.style.display='none'; };
 }
 
-// Load purchases
-async function loadPurchases() {
-  purchasesContainer.innerHTML = "Loading...";
-  try {
-    const res = await fetch(`${API_BASE}/admin/purchases`);
-    const purchases = await res.json();
 
-    purchasesContainer.innerHTML = "";
-    purchases.forEach(p => {
-      const div = document.createElement("div");
-      div.className = "purchase-item";
-      div.innerHTML = `
-        <p><strong>${p.buyer_name}</strong> (${p.buyer_phone})</p>
-        <p>Location: ${p.drop_location}</p>
-        <p>Product ID: ${p.product_id} — Txn: ${p.transaction_id}</p>
-        <p>Time: ${new Date(p.purchase_time).toLocaleString()}</p>
-      `;
-      purchasesContainer.appendChild(div);
-    });
-  } catch {
-    purchasesContainer.innerHTML = "<p>Failed to load purchases.</p>";
-  }
-}
 
 // Delete product
 async function deleteProduct(id) {
@@ -208,3 +232,16 @@ modal.onclick = (e) => { if(e.target===modal) modal.style.display='none'; }
 // Init
 loadProducts();
 loadPurchases();
+function updateGridCentering() {
+  const products = document.getElementById('products').children.length;
+  const purchases = document.getElementById('purchases').children.length;
+  
+  if (products + purchases === 0) {
+    document.body.classList.add('centered');
+  } else {
+    document.body.classList.remove('centered');
+  }
+}
+
+// Call this after adding products/orders dynamically
+updateGridCentering();
