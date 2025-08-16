@@ -4,17 +4,195 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>🎨 ArtFrenzy Admin</title>
-<!-- Import custom CSS -->
 <link rel="stylesheet" href="me.css">
 <style>
-/* Quick enhancements for a more "engineer" vibe */
-body { font-family: 'Courier New', monospace; background:#0d0d0d; color:#eee; }
-header h1 { font-family: 'Segoe UI', sans-serif; letter-spacing: 1px; }
-nav button { font-family: monospace; letter-spacing: 0.5px; font-weight: bold; }
-#spinner { color:#0f0; font-weight:bold; }
-#logContainer { font-family: monospace; font-size:0.85rem; color:#0f0; background:#111; padding:0.5rem; border-radius:6px; border:1px solid #333; }
-#toast { font-family: monospace; }
-table th, table td { font-family: monospace; font-size:0.9rem; }
+:root {
+  --bg-dark: #0d0d0d;
+  --bg-card: #1a1a1a;
+  --text-light: #eee;
+  --accent: #0f0; /* neon green highlights */
+  --border: #333;
+}
+
+body {
+  font-family: 'Courier New', monospace;
+  background: var(--bg-dark);
+  color: var(--text-light);
+  margin: 0;
+  padding: 0;
+}
+
+/* Header */
+header {
+  background: #111;
+  border-bottom: 1px solid var(--border);
+  padding: 1rem;
+  text-align: center;
+}
+header h1 {
+  font-family: 'Segoe UI', sans-serif;
+  letter-spacing: 1px;
+  margin: 0;
+  font-size: 1.5rem;
+}
+nav {
+  margin-top: .5rem;
+}
+nav button {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-light);
+  font-family: monospace;
+  font-weight: bold;
+  padding: .5rem 1rem;
+  margin: 0 .3rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+nav button:hover {
+  background: var(--accent);
+  color: var(--bg-dark);
+}
+
+/* Layout */
+main {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  max-width: 1200px;
+  margin: auto;
+}
+section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+h2 {
+  margin-top: 0;
+  font-size: 1.2rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: .5rem;
+}
+
+/* Form */
+form {
+  display: grid;
+  gap: .8rem;
+  margin-bottom: 1rem;
+}
+input[type="text"],
+input[type="number"],
+input[type="file"] {
+  width: 100%;
+  padding: .6rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #111;
+  color: var(--text-light);
+}
+input:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+button[type="submit"] {
+  background: var(--accent);
+  border: none;
+  padding: .7rem;
+  font-weight: bold;
+  color: var(--bg-dark);
+  border-radius: 6px;
+  cursor: pointer;
+}
+button[type="submit"]:hover {
+  opacity: 0.9;
+}
+
+/* Image preview */
+#imagePreview img {
+  max-width: 150px;
+  margin-top: .5rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+th, td {
+  border-bottom: 1px solid var(--border);
+  padding: .8rem;
+  text-align: left;
+  font-size: 0.9rem;
+}
+th {
+  background: #222;
+  font-weight: bold;
+}
+td img {
+  max-width: 60px;
+  border-radius: 4px;
+}
+
+/* Spinner + toast + logs */
+#spinner {
+  color: var(--accent);
+  font-weight: bold;
+  text-align: center;
+  padding: .5rem;
+  display: none;
+}
+#toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #222;
+  padding: .8rem 1rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  display: none;
+  transition: all 0.3s ease;
+}
+#logContainer {
+  font-size:0.85rem;
+  color:var(--accent);
+  background:#111;
+  padding:0.5rem;
+  border-radius:6px;
+  border:1px solid var(--border);
+  margin-top: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  main {
+    padding: 1rem;
+  }
+  table, thead, tbody, th, td, tr {
+    display: block;
+  }
+  thead { display: none; }
+  tr {
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding-left: 50%;
+    position: relative;
+  }
+  td::before {
+    position: absolute;
+    left: 1rem;
+    font-weight: bold;
+    content: attr(data-label);
+  }
+}
 </style>
 </head>
 <body>
