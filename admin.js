@@ -3,6 +3,7 @@ const MAX_FILE_SIZE_MB = 5;
 
 const productImageInput = document.getElementById("productImage");
 const imagePreview = document.getElementById("imagePreview");
+let uploadedImageUrl = null; // store uploaded image path
 
 // ---------------- Toast ----------------
 function showToast(msg, success = true, duration = 3000) {
@@ -19,7 +20,7 @@ function showToast(msg, success = true, duration = 3000) {
     }, duration);
 }
 
-// ---------------- Image Preview & Upload ----------------
+// ---------------- Image Upload (first) ----------------
 productImageInput.addEventListener("change", async () => {
     imagePreview.innerHTML = "";
     const file = productImageInput.files[0];
@@ -32,26 +33,56 @@ productImageInput.addEventListener("change", async () => {
     previewImg.src = URL.createObjectURL(file);
     imagePreview.appendChild(previewImg);
 
-    // Upload immediately
+    // Upload image separately
     const formData = new FormData();
-    formData.append("title", document.getElementById("productTitle").value || "Untitled");
-    formData.append("price", document.getElementById("productPrice").value || 0);
-    formData.append("stock", document.getElementById("productStock").value || 0);
     formData.append("image", file);
 
     try {
-        const res = await fetch(`${API_BASE}admin/add-product`, {
+        const res = await fetch(`${API_BASE}/admin/upload-image`, {
             method: "POST",
             body: formData
         });
         const data = await res.json();
         if (res.ok) {
-            showToast("✅ Product uploaded!");
+            uploadedImageUrl = data.image_url;
+            showToast("✅ Image uploaded!");
+        } else {
+            uploadedImageUrl = null;
+            showToast(`❌ Upload failed: ${data.error}`, false);
+        }
+    } catch (err) {
+        uploadedImageUrl = null;
+        showToast("❌ Network error: " + err.message, false);
+    }
+});
+
+// ---------------- Save Product Info (later) ----------------
+async function saveProduct() {
+    if (!uploadedImageUrl) {
+        return showToast("Please upload an image first", false);
+    }
+
+    const productData = {
+        title: document.getElementById("productTitle").value || "Untitled",
+        price: parseFloat(document.getElementById("productPrice").value) || 0,
+        stock: parseInt(document.getElementById("productStock").value) || 0,
+        image_url: uploadedImageUrl
+    };
+
+    try {
+        const res = await fetch(`${API_BASE}/admin/add-product`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(productData)
+        });
+        const data = await res.json();
+        if (res.ok) {
+            showToast("✅ Product saved!");
             loadProducts();
         } else {
-            showToast(`❌ Upload failed: ${data.error}`, false);
+            showToast(`❌ Save failed: ${data.error}`, false);
         }
     } catch (err) {
         showToast("❌ Network error: " + err.message, false);
     }
-});
+}
