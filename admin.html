@@ -5,213 +5,217 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ArtFrenzy Admin</title>
 <style>
-    /* ---------------- Global ---------------- */
+/* ------------------ GENERAL RESET ------------------ */
 * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
 }
 
 body {
-  font-family: 'Segoe UI', sans-serif;
-  background-color: #000; /* pure black */
-  color: #c0c0c0; /* silver text */
-  min-height: 100vh;
-  padding: 0 1rem;
+    background-color: #0a0a0a;
+    color: #ccc;
+    line-height: 1.5;
+    min-height: 100vh;
 }
 
-/* ---------------- Header ---------------- */
+/* ------------------ HEADER ------------------ */
 header {
-  text-align: center;
-  font-size: 3rem; /* big title */
-  font-weight: bold;
-  margin: 2rem 0;
-  position: relative;
-  color: #c0c0c0;
+    text-align: center;
+    font-size: 3rem;
+    font-weight: bold;
+    color: #f0f0f0;
+    margin: 2rem 0;
+    position: relative;
 }
 
-/* Optional brush splash effect */
+/* Paint splash effect */
 header::before, header::after {
-  content: "";
-  position: absolute;
-  width: 80%;
-  height: 20px;
-  background: radial-gradient(circle, #444 10%, transparent 70%);
-  top: 50%;
-  left: 10%;
-  transform: rotate(-15deg);
-  opacity: 0.2;
+    content: "";
+    position: absolute;
+    width: 80%;
+    height: 20px;
+    background: radial-gradient(circle, #ff00ff 10%, transparent 70%);
+    top: 40%;
+    left: 10%;
+    transform: rotate(-15deg);
+    opacity: 0.15;
 }
 
 header::after {
-  transform: rotate(10deg);
-  opacity: 0.15;
+    background: radial-gradient(circle, #00ffff 10%, transparent 70%);
+    transform: rotate(15deg);
+    opacity: 0.1;
 }
 
-/* ---------------- Main ---------------- */
+/* ------------------ MAIN ------------------ */
 main {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 0 2rem;
 }
 
 /* Sections */
 section {
-  background: #111;
-  padding: 1.2rem;
-  border-radius: 10px;
+    background-color: #111;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
 }
 
 /* Section Titles */
 h2 {
-  color: #c0c0c0;
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
-  border-bottom: 1px solid #444;
-  padding-bottom: 0.4rem;
+    color: #fff;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #333;
+    padding-bottom: 0.5rem;
 }
 
 /* Inputs and Buttons */
 input, button {
-  width: 100%;
-  padding: 0.7rem;
-  margin: 0.5rem 0;
-  border-radius: 6px;
-  border: none;
-  font-size: 1rem;
+    width: 100%;
+    padding: 0.7rem;
+    margin: 0.5rem 0;
+    border-radius: 8px;
+    border: none;
+    font-size: 1rem;
 }
 
 input {
-  background: #222;
-  color: #c0c0c0;
+    background: #222;
+    color: #ccc;
 }
 
 input::placeholder {
-  color: #888;
+    color: #777;
 }
 
 button {
-  background: #444;
-  color: #c0c0c0;
-  font-weight: bold;
-  cursor: pointer;
-  transition: 0.3s;
+    background: #333;
+    color: #ccc;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
 }
 
-button:hover {
-  background: #666;
-  color: #fff;
+button:hover:not(:disabled) {
+    background: #555;
+    color: #fff;
 }
 
-/* ---------------- Products Grid ---------------- */
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ------------------ PRODUCTS GRID ------------------ */
 #products {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 1.2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
 }
 
 .product-card {
-  background: #111;
-  padding: 0.8rem;
-  border-radius: 12px;
-  text-align: center;
-  overflow: hidden;
-  box-shadow: 0 0 10px #333;
-  transition: transform 0.2s, box-shadow 0.2s;
+    background: #1a1a1a;
+    padding: 1rem;
+    border-radius: 12px;
+    text-align: center;
+    overflow: hidden;
+    box-shadow: 0 0 15px #000;
+    position: relative;
+    transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .product-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 0 15px #444;
+    transform: translateY(-5px);
+    box-shadow: 0 0 25px #444;
 }
 
 .product-card img {
-  width: 100%;
-  height: 180px; /* larger images */
-  object-fit: cover;
-  border-radius: 8px;
-  margin-bottom: 0.8rem;
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
 }
 
 .product-card h3 {
-  font-size: 1.1rem;
-  margin-bottom: 0.3rem;
+    font-size: 1.1rem;
+    margin: 0.4rem 0;
+    color: #fff;
 }
 
 .product-card p {
-  font-size: 0.95rem;
-  margin: 0.2rem 0;
+    font-size: 0.95rem;
+    margin: 0.2rem 0;
+    color: #aaa;
 }
 
 /* Product Buttons inside card */
 .product-card button {
-  width: 48%;
-  margin: 0.2rem 1%;
-  font-size: 0.9rem;
+    width: 48%;
+    margin: 0.2rem 1%;
+    font-size: 0.9rem;
 }
 
-/* ---------------- Logs ---------------- */
+/* ------------------ LOGS ------------------ */
 #logs-section ul {
-  list-style: none;
-  max-height: 250px;
-  overflow-y: auto;
-  padding: 0.5rem;
-  background: #111;
-  border-radius: 6px;
-  color: #c0c0c0;
+    list-style: none;
+    max-height: 250px;
+    overflow-y: auto;
+    padding: 0.5rem;
+    background: #111;
+    border-radius: 8px;
+    color: #ccc;
 }
 
 #logs-section li {
-  font-size: 0.85rem;
-  margin-bottom: 4px;
-  word-wrap: break-word;
+    font-size: 0.85rem;
+    margin-bottom: 4px;
+    word-wrap: break-word;
 }
 
-/* ---------------- Responsive ---------------- */
+/* ------------------ RESPONSIVE ------------------ */
 @media (max-width: 480px) {
-  #products {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  }
+    #products {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    }
 
-  h2 {
-    font-size: 1.2rem;
-  }
+    h2 {
+        font-size: 1.2rem;
+    }
 
-  button, input {
-    font-size: 0.9rem;
-  }
+    button, input {
+        font-size: 0.9rem;
+    }
 
-  header {
-    font-size: 2.5rem;
-  }
-  /* ---------------- Footer ---------------- */
-footer {
-  background: #111;
-  color: #c0c0c0;
-  text-align: center;
-  padding: 1rem 0;
-  border-top: 1px solid #333;
-  font-size: 0.9rem;
-  margin-top: 2rem;
+    header {
+        font-size: 2.5rem;
+    }
 }
 
-footer p {
-  margin: 0;
+/* ------------------ FOOTER ------------------ */
+footer {
+    background: #111;
+    color: #ccc;
+    text-align: center;
+    padding: 1rem 0;
+    border-top: 1px solid #333;
+    font-size: 0.9rem;
+    margin-top: 2rem;
 }
 
 footer a {
-  color: #c0c0c0;
-  text-decoration: underline;
+    color: #ccc;
+    text-decoration: underline;
 }
 
 footer a:hover {
-  color: #fff;
+    color: #fff;
 }
-
-}
-
-
 </style>
 </head>
 <body>
@@ -241,6 +245,7 @@ footer a:hover {
     <ul id="log-list"></ul>
   </section>
 </main>
+
 <footer>
   <p>© 2025 ArtFrenzy Admin. All rights reserved.</p>
 </footer>
