@@ -21,7 +21,9 @@ function addLog(message) {
 // Helper: format image URL safely
 function formatImageUrl(path) {
   if (!path) return "https://via.placeholder.com/250x250?text=No+Image";
-  return `${url}/uploads/${encodeURIComponent(path.replace(/\\/g, '/'))}`;
+  // Remove any leading 'uploads/' to prevent double path
+  const cleanPath = path.replace(/^uploads[\\/]/, '');
+  return `${url}/uploads/${encodeURIComponent(cleanPath)}`;
 }
 
 // ---------------- Upload Image ----------------
@@ -38,7 +40,7 @@ uploadBtn.addEventListener("click", async () => {
     const data = await res.json();
     if (data.error) return addLog("❌ Upload failed: " + data.error);
 
-    uploadedImageUrl = data.image_url.replace(/\\/g, '/');
+    uploadedImageUrl = data.image_url.replace(/\\/g, '/'); // keep for backend
     addLog("✅ Image uploaded successfully: " + uploadedImageUrl);
   } catch (err) {
     addLog("❌ Upload failed: " + err);
@@ -109,9 +111,6 @@ async function loadProducts() {
     }
 
     products.forEach((p) => {
-      const stock = parseInt(p.stock) || 0;
-      const imgSrc = formatImageUrl(p.image_url);
-
       const card = document.createElement("div");
       card.className = "product-card";
       card.style.border = "1px solid #ccc";
@@ -122,12 +121,14 @@ async function loadProducts() {
       card.style.maxWidth = "280px";
       card.style.flex = "1 1 250px";
 
+      const imgSrc = formatImageUrl(p.image_url);
+
       card.innerHTML = `
-        ${stock === 0 ? '<div style="color:red;font-weight:bold;">Sold Out</div>' : ''}
+        ${parseInt(p.stock) === 0 ? '<div style="color:red;font-weight:bold;">Sold Out</div>' : ''}
         <img src="${imgSrc}" alt="${p.title}" style="width:100%; height:auto; border-radius:8px;"/>
         <h3>${p.title}</h3>
         <p>Price: $${p.price}</p>
-        <p>Stock: ${stock}</p>
+        <p>Stock: ${p.stock}</p>
         <div style="display:flex; gap:0.5rem; margin-top:0.5rem;">
           <button class="edit-btn" data-id="${p.id}">Edit</button>
           <button class="delete-btn" data-id="${p.id}">Delete</button>
