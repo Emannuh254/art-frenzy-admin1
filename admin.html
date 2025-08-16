@@ -3,35 +3,37 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Art Frenzy Admin</title>
+<title>ArtFrenzy Admin</title>
 <link rel="stylesheet" href="admin.css">
 </head>
 <body>
 <header>
-    <h1>🎨 Art Frenzy Admin</h1>
+  <h1>ArtFrenzy Admin</h1>
 </header>
 
-<section class="add-product-section">
+<main>
+  <section id="add-product-section">
     <h2>Add Product</h2>
     <form id="productForm">
-        <input type="text" id="title" placeholder="Product Title" required>
-        <input type="number" id="price" placeholder="Price" required>
-        <input type="number" id="stock" placeholder="Stock" required>
-        <input type="file" id="image" accept="image/*" required>
-        <button type="submit">Add Product</button>
+      <input type="text" id="title" placeholder="Product title" required>
+      <input type="number" id="price" placeholder="Price" required min="0">
+      <input type="number" id="stock" placeholder="Stock" required min="0">
+      <input type="file" id="image" accept="image/*" required>
+      <button type="submit">Add Product</button>
     </form>
     <div id="toast"></div>
-</section>
+  </section>
 
-<section class="products-section">
+  <section id="products-section">
     <h2>Products</h2>
-    <div id="products" class="products-grid"></div>
-</section>
+    <div id="products"></div>
+  </section>
 
-<section class="orders-section">
+  <section id="orders-section">
     <h2>Orders</h2>
-    <div id="purchases" class="orders-grid"></div>
-</section>
+    <div id="purchases"></div>
+  </section>
+</main>
 
 <script src="admin.js"></script>
 </body>
