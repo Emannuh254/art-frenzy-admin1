@@ -4,35 +4,181 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ArtFrenzy Admin</title>
-<link rel="stylesheet" href="admin.css">
+<style>
+  /* Dark black theme with silver text */
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #000; /* pure black */
+    color: #c0c0c0; /* silver text */
+    min-height: 100vh;
+    padding: 0 0.5rem;
+  }
+
+  header {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 1rem 0;
+    position: relative;
+    display: inline-block;
+    color: #c0c0c0;
+  }
+
+  /* Ink splash / brush effect on title */
+  header::before, header::after {
+    content: "";
+    position: absolute;
+    width: 80%;
+    height: 20px;
+    background: radial-gradient(circle, #444 10%, transparent 70%);
+    top: 50%;
+    left: 10%;
+    transform: rotate(-15deg);
+    opacity: 0.3;
+  }
+
+  header::after {
+    transform: rotate(10deg);
+    opacity: 0.2;
+  }
+
+  main {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  h2 {
+    color: #c0c0c0;
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+    border-bottom: 1px solid #444;
+    padding-bottom: 0.3rem;
+  }
+
+  section {
+    background: #111; /* dark grey-black */
+    padding: 1rem;
+    border-radius: 10px;
+  }
+
+  input, button {
+    width: 100%;
+    padding: 0.6rem;
+    margin: 0.5rem 0;
+    border-radius: 6px;
+    border: none;
+    font-size: 1rem;
+  }
+
+  input {
+    background: #222; 
+    color: #c0c0c0;
+  }
+
+  input::placeholder {
+    color: #888;
+  }
+
+  button {
+    background: #444; 
+    color: #c0c0c0;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  button:hover {
+    background: #666;
+    color: #fff;
+  }
+
+  #products {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 1rem;
+  }
+
+  .product-card {
+    background: #111;
+    padding: 0.5rem;
+    border-radius: 10px;
+    text-align: center;
+    overflow: hidden;
+    box-shadow: 0 0 8px #333;
+  }
+
+  .product-card img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+  }
+
+  #logs-section ul {
+    list-style: none;
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 0.5rem;
+    background: #111;
+    border-radius: 6px;
+    color: #c0c0c0;
+  }
+
+  #logs-section li {
+    font-size: 0.85rem;
+    margin-bottom: 3px;
+    word-wrap: break-word;
+  }
+
+  @media (max-width: 480px) {
+    #products {
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+
+    h2 {
+      font-size: 1rem;
+    }
+
+    button {
+      font-size: 0.9rem;
+    }
+  }
+</style>
 </head>
 <body>
-<header>
-  <h1>ArtFrenzy Admin</h1>
-</header>
+<header>ArtFrenzy Admin</header>
 
 <main>
+  <!-- Add Product -->
   <section id="add-product-section">
     <h2>Add Product</h2>
-    <form id="productForm">
-      <input type="file" id="image" accept="image/*" required>
-      <input type="text" id="title" placeholder="Product title" required>
-      <input type="number" id="price" placeholder="Price" required min="0">
-      <input type="number" id="stock" placeholder="Stock" required min="0">
-      
-      <button type="submit">Add Product</button>
-    </form>
-    <div id="toast"></div>
+    <input type="file" id="product-image" accept="image/*">
+    <input type="text" id="product-title" placeholder="Product title">
+    <input type="number" id="product-price" placeholder="Price" min="0">
+    <input type="number" id="product-stock" placeholder="Stock" min="0">
+    <button id="upload-btn">Upload Image</button>
+    <button id="add-product-btn">Add Product</button>
   </section>
 
+  <!-- Products Display -->
   <section id="products-section">
     <h2>Products</h2>
     <div id="products"></div>
   </section>
 
-  <section id="orders-section">
-    <h2>Orders</h2>
-    <div id="purchases"></div>
+  <!-- Logs -->
+  <section id="logs-section">
+    <h2>Logs</h2>
+    <ul id="log-list"></ul>
   </section>
 </main>
 
