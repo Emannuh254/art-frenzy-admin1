@@ -1,145 +1,217 @@
-/* ----------------------------
-   Reset & Base Styles
----------------------------- */
+/* -----------------------------
+   Base & Reset
+----------------------------- */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Arial', sans-serif;
 }
-
 body {
-    background-color: #111;
-    color: #eee;
-    line-height: 1.5;
+  background: #111;
+  color: #eee;
+  line-height: 1.6;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  align-items: center;
 }
 
-/* ----------------------------
-   Header
----------------------------- */
+/* Header */
 header {
-    padding: 1rem;
-    text-align: center;
-    background-color: #000;
-    border-bottom: 1px solid #333;
+  padding: 1.5rem 2rem;
+  text-align: center;
+  background: #000;
+  border-bottom: 1px solid #333;
+  width: 100%;
+}
+h1 {
+  color: #0ff;
+  font-size: 2.2rem;
+  letter-spacing: 1px;
+  text-shadow: 0 0 5px #0ff, 0 0 10px #0ff;
 }
 
-h1, h2 {
-    color: #0ff;
+/* Section Collapsible */
+.collapsible-section {
+  margin: 1rem auto;
+  border: 1px solid #333;
+  border-radius: 12px;
+  overflow: hidden;
+  width: 90%;
+  max-width: 600px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 255, 255, 0.1);
+}
+.section-title {
+  padding: 1rem 1.2rem;
+  background: #111;
+  cursor: pointer;
+  color: #ff0;
+  font-size: 1.3rem;
+  font-weight: bold;
+  transition: 0.3s;
+  border-left: 4px solid #0ff;
+}
+.section-title:hover {
+  background: #222;
+  color: #0ff;
+}
+.section-content {
+  display: none;
+  padding: 1rem 1.2rem;
+  background: #111;
+  gap: 1rem;
+  animation: fadeIn 0.4s ease-in-out;
 }
 
-/* ----------------------------
-   Main Layout
----------------------------- */
-main {
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-}
-
-/* ----------------------------
-   Form Styles
----------------------------- */
+/* Form */
 form {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    max-width: 400px;
-    margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  max-width: 400px;
+  margin: 1rem auto;
+  padding: 1rem;
+  border-radius: 12px;
+  background: #1a1a1a;
+  box-shadow: 0 5px 20px rgba(0, 255, 255, 0.1);
 }
-
 input, button {
-    padding: 0.5rem;
-    border-radius: 5px;
-    border: none;
+  padding: 0.7rem 1rem;
+  border-radius: 8px;
+  border: none;
+  font-size: 1rem;
 }
-
 input {
-    background-color: #222;
-    color: #eee;
+  background: #222;
+  color: #eee;
+  transition: 0.2s;
 }
-
 input::placeholder {
-    color: #aaa;
+  color: #aaa;
 }
-
+input:focus {
+  outline: 2px solid #0ff;
+  background: #111;
+}
 button {
-    background-color: #0ff;
-    color: #000;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
+  background: #0ff;
+  color: #000;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+  box-shadow: 0 5px 15px rgba(0, 255, 255, 0.3);
 }
-
 button:hover {
-    background-color: #0cc;
+  background: #0cc;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 255, 255, 0.4);
 }
 
-/* ----------------------------
-   Toast Notifications
----------------------------- */
+/* Toast */
 #toast {
-    position: fixed;
-    top: 1rem;
-    right: 1rem;
-    background-color: #0f0;
-    color: #000;
-    padding: 0.5rem 1rem;
-    border-radius: 5px;
-    display: none;
-    z-index: 1000;
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  background: #0f0;
+  color: #000;
+  padding: 0.7rem 1.2rem;
+  border-radius: 8px;
+  display: none;
+  z-index: 1000;
+  font-weight: bold;
+  box-shadow: 0 5px 20px rgba(0, 255, 0, 0.3);
 }
 
-/* ----------------------------
-   Products & Orders Grid
----------------------------- */
+/* Products & Orders Grid */
 #products, #purchases {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.2rem;
+  justify-items: center;
+  width: 95%;
+  max-width: 1200px;
+  margin: 1rem auto;
 }
-
-/* ----------------------------
-   Product & Purchase Cards
----------------------------- */
 .product-card, .purchase-item {
-    background-color: #222;
-    padding: 1rem;
-    border-radius: 10px;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+  background: #1a1a1a;
+  padding: 1rem;
+  border-radius: 12px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  transition: transform 0.3s, box-shadow 0.3s;
+  box-shadow: 0 4px 15px rgba(0, 255, 255, 0.1);
 }
-
-.sold-badge {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    background-color: red;
-    color: #fff;
-    padding: 0.2rem 0.5rem;
-    border-radius: 5px;
-    font-size: 0.8rem;
+.product-card:hover, .purchase-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 255, 255, 0.2);
 }
-
 .product-card img {
-    width: 100%;
-    height: 150px;
-    object-fit: cover;
-    border-radius: 5px;
-    margin-bottom: 0.5rem;
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+.sold-badge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: red;
+  color: #fff;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: bold;
 }
 
-/* ----------------------------
-   Responsive Design
----------------------------- */
-@media (max-width: 600px) {
-    #products, #purchases {
-        grid-template-columns: 1fr;
-    }
+/* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 2000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.85);
+  justify-content: center;
+  align-items: center;
+}
+.modal-content {
+  background: #1a1a1a;
+  padding: 1.5rem;
+  border-radius: 12px;
+  max-width: 95%;
+  width: 400px;
+  color: #eee;
+  position: relative;
+  box-shadow: 0 10px 40px rgba(0, 255, 255, 0.3);
+}
+.close-modal {
+  position: absolute;
+  top: 0.5rem;
+  right: 1rem;
+  cursor: pointer;
+  font-size: 1.5rem;
+  transition: color 0.2s;
+}
+.close-modal:hover {
+  color: #0ff;
+}
 
-    form {
-        width: 100%;
-    }
+/* Responsive */
+@media(max-width:600px){
+  #products, #purchases { grid-template-columns: 1fr; }
+  form { width: 90%; }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
 }
