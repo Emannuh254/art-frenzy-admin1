@@ -5,153 +5,189 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ArtFrenzy Admin</title>
 <style>
-  /* Dark black theme with silver text */
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
+    /* ---------------- Global ---------------- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-  body {
-    font-family: 'Segoe UI', sans-serif;
-    background-color: #000; /* pure black */
-    color: #c0c0c0; /* silver text */
-    min-height: 100vh;
-    padding: 0 0.5rem;
-  }
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #000; /* pure black */
+  color: #c0c0c0; /* silver text */
+  min-height: 100vh;
+  padding: 0 1rem;
+}
 
-  header {
-    text-align: center;
-    font-size: 2rem;
-    font-weight: bold;
-    margin: 1rem 0;
-    position: relative;
-    display: inline-block;
-    color: #c0c0c0;
-  }
+/* ---------------- Header ---------------- */
+header {
+  text-align: center;
+  font-size: 3rem; /* big title */
+  font-weight: bold;
+  margin: 2rem 0;
+  position: relative;
+  color: #c0c0c0;
+}
 
-  /* Ink splash / brush effect on title */
-  header::before, header::after {
-    content: "";
-    position: absolute;
-    width: 80%;
-    height: 20px;
-    background: radial-gradient(circle, #444 10%, transparent 70%);
-    top: 50%;
-    left: 10%;
-    transform: rotate(-15deg);
-    opacity: 0.3;
-  }
+/* Optional brush splash effect */
+header::before, header::after {
+  content: "";
+  position: absolute;
+  width: 80%;
+  height: 20px;
+  background: radial-gradient(circle, #444 10%, transparent 70%);
+  top: 50%;
+  left: 10%;
+  transform: rotate(-15deg);
+  opacity: 0.2;
+}
 
-  header::after {
-    transform: rotate(10deg);
-    opacity: 0.2;
-  }
+header::after {
+  transform: rotate(10deg);
+  opacity: 0.15;
+}
 
-  main {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    margin-bottom: 2rem;
+/* ---------------- Main ---------------- */
+main {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+/* Sections */
+section {
+  background: #111;
+  padding: 1.2rem;
+  border-radius: 10px;
+}
+
+/* Section Titles */
+h2 {
+  color: #c0c0c0;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #444;
+  padding-bottom: 0.4rem;
+}
+
+/* Inputs and Buttons */
+input, button {
+  width: 100%;
+  padding: 0.7rem;
+  margin: 0.5rem 0;
+  border-radius: 6px;
+  border: none;
+  font-size: 1rem;
+}
+
+input {
+  background: #222;
+  color: #c0c0c0;
+}
+
+input::placeholder {
+  color: #888;
+}
+
+button {
+  background: #444;
+  color: #c0c0c0;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: #666;
+  color: #fff;
+}
+
+/* ---------------- Products Grid ---------------- */
+#products {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1.2rem;
+}
+
+.product-card {
+  background: #111;
+  padding: 0.8rem;
+  border-radius: 12px;
+  text-align: center;
+  overflow: hidden;
+  box-shadow: 0 0 10px #333;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 15px #444;
+}
+
+.product-card img {
+  width: 100%;
+  height: 180px; /* larger images */
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 0.8rem;
+}
+
+.product-card h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.3rem;
+}
+
+.product-card p {
+  font-size: 0.95rem;
+  margin: 0.2rem 0;
+}
+
+/* Product Buttons inside card */
+.product-card button {
+  width: 48%;
+  margin: 0.2rem 1%;
+  font-size: 0.9rem;
+}
+
+/* ---------------- Logs ---------------- */
+#logs-section ul {
+  list-style: none;
+  max-height: 250px;
+  overflow-y: auto;
+  padding: 0.5rem;
+  background: #111;
+  border-radius: 6px;
+  color: #c0c0c0;
+}
+
+#logs-section li {
+  font-size: 0.85rem;
+  margin-bottom: 4px;
+  word-wrap: break-word;
+}
+
+/* ---------------- Responsive ---------------- */
+@media (max-width: 480px) {
+  #products {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   }
 
   h2 {
-    color: #c0c0c0;
-    margin-bottom: 0.5rem;
     font-size: 1.2rem;
-    border-bottom: 1px solid #444;
-    padding-bottom: 0.3rem;
   }
 
-  section {
-    background: #111; /* dark grey-black */
-    padding: 1rem;
-    border-radius: 10px;
+  button, input {
+    font-size: 0.9rem;
   }
 
-  input, button {
-    width: 100%;
-    padding: 0.6rem;
-    margin: 0.5rem 0;
-    border-radius: 6px;
-    border: none;
-    font-size: 1rem;
+  header {
+    font-size: 2.5rem;
   }
+}
 
-  input {
-    background: #222; 
-    color: #c0c0c0;
-  }
 
-  input::placeholder {
-    color: #888;
-  }
-
-  button {
-    background: #444; 
-    color: #c0c0c0;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.3s;
-  }
-
-  button:hover {
-    background: #666;
-    color: #fff;
-  }
-
-  #products {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 1rem;
-  }
-
-  .product-card {
-    background: #111;
-    padding: 0.5rem;
-    border-radius: 10px;
-    text-align: center;
-    overflow: hidden;
-    box-shadow: 0 0 8px #333;
-  }
-
-  .product-card img {
-    width: 100%;
-    height: 120px;
-    object-fit: cover;
-    border-radius: 6px;
-    margin-bottom: 0.5rem;
-  }
-
-  #logs-section ul {
-    list-style: none;
-    max-height: 200px;
-    overflow-y: auto;
-    padding: 0.5rem;
-    background: #111;
-    border-radius: 6px;
-    color: #c0c0c0;
-  }
-
-  #logs-section li {
-    font-size: 0.85rem;
-    margin-bottom: 3px;
-    word-wrap: break-word;
-  }
-
-  @media (max-width: 480px) {
-    #products {
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    }
-
-    h2 {
-      font-size: 1rem;
-    }
-
-    button {
-      font-size: 0.9rem;
-    }
-  }
 </style>
 </head>
 <body>
