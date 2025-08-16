@@ -1,5 +1,5 @@
-const API_BASE = "https://art-frenzy-admin.onrender.com";
-
+//const API_BASE = "https://art-frenzy-admin.onrender.com";
+const API_BASE = "https://art-frenzy-admin-3.onrender.com";
 const productsContainer = document.getElementById("products");
 const purchasesContainer = document.getElementById("purchases");
 const form = document.getElementById("productForm");
