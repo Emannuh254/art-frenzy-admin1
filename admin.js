@@ -8,9 +8,9 @@ const productsContainer = document.getElementById("products");
 const logList = document.getElementById("log-list");
 
 let uploadedImageUrl = "";
-let editingProductId = null; // Track product being edited
+let editingProductId = null;
 
-// ---------------- Logging ----------------
+// Logging
 function addLog(message) {
   const li = document.createElement("li");
   li.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
@@ -18,24 +18,20 @@ function addLog(message) {
   logList.scrollTop = logList.scrollHeight;
 }
 
-// ---------------- Upload Image ----------------
+// Upload Image
 uploadBtn.addEventListener("click", async () => {
   const file = imageInput.files[0];
   if (!file) return addLog("❌ Select an image first!");
 
   const formData = new FormData();
   formData.append("image", file);
-
   addLog("⏳ Uploading image...");
 
   try {
     const res = await fetch(`${url}/upload-image`, { method: "POST", body: formData });
     const data = await res.json();
 
-    if (data.error) {
-      addLog("❌ Upload failed: " + data.error);
-      return;
-    }
+    if (data.error) return addLog("❌ Upload failed: " + data.error);
 
     uploadedImageUrl = data.image_url;
     addLog("✅ Image uploaded successfully: " + uploadedImageUrl);
@@ -44,7 +40,7 @@ uploadBtn.addEventListener("click", async () => {
   }
 });
 
-// ---------------- Add / Update Product ----------------
+// Add / Update Product
 addProductBtn.addEventListener("click", async () => {
   const title = document.querySelector("#product-title").value.trim();
   const price = document.querySelector("#product-price").value.trim();
@@ -55,7 +51,9 @@ addProductBtn.addEventListener("click", async () => {
     return;
   }
 
-  const endpoint = editingProductId ? `${url}/update-product/${editingProductId}` : `${url}/add-product`;
+  const endpoint = editingProductId
+    ? `${url}/update-product/${editingProductId}`
+    : `${url}/add-product`;
   const method = editingProductId ? "PUT" : "POST";
 
   addLog(editingProductId ? "⏳ Updating product..." : "⏳ Adding product...");
@@ -64,17 +62,14 @@ addProductBtn.addEventListener("click", async () => {
     const res = await fetch(endpoint, {
       method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, price, st     ock, image_url: uploadedImageUrl })
+      body: JSON.stringify({ title, price, stock, image_url: uploadedImageUrl })
     });
-
     const data = await res.json();
-    if (data.error) {
-      addLog("❌ Failed: " + data.error);
-      return;
-    }
 
-    addLog(editingProductId 
-      ? `✅ Product updated successfully: ${data.product.title}` 
+    if (data.error) return addLog("❌ Failed: " + data.error);
+
+    addLog(editingProductId
+      ? `✅ Product updated successfully: ${data.product.title}`
       : `✅ Product added successfully: ${data.product.title}`);
 
     // Clear form
@@ -92,7 +87,7 @@ addProductBtn.addEventListener("click", async () => {
   }
 });
 
-// ---------------- Load Products ----------------
+// Load Products
 async function loadProducts() {
   addLog("⏳ Loading products...");
 
@@ -125,7 +120,6 @@ async function loadProducts() {
 
       productsContainer.appendChild(card);
 
-      // Edit button
       card.querySelector(".edit-btn").addEventListener("click", () => {
         document.querySelector("#product-title").value = p.title;
         document.querySelector("#product-price").value = p.price;
@@ -136,17 +130,13 @@ async function loadProducts() {
         addLog(`✏️ Editing product: ${p.title}`);
       });
 
-      // Delete button
       card.querySelector(".delete-btn").addEventListener("click", async () => {
         if (!confirm(`Are you sure you want to delete "${p.title}"?`)) return;
 
         try {
           const res = await fetch(`${url}/delete-product/${p.id}`, { method: "DELETE" });
           const data = await res.json();
-          if (data.error) {
-            addLog("❌ Delete failed: " + data.error);
-            return;
-          }
+          if (data.error) return addLog("❌ Delete failed: " + data.error);
           addLog(`🗑️ Product deleted: ${p.title}`);
           loadProducts();
         } catch (err) {
@@ -162,5 +152,4 @@ async function loadProducts() {
   }
 }
 
-// Load products on page load
 window.addEventListener("DOMContentLoaded", loadProducts);
